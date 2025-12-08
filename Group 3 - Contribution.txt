@@ -1,0 +1,35 @@
+Group Members: Najaf Ali – 9060484, Zemmat Hagos – 84884339, Brad Kajganich – 9036321
+
+
+Najaf Ali:
+
+- Phase 1: Project Idea & Use Case
+	- Choose a real-world scenario ( A Library Management System ).
+	- Created a GitHub repository and add all members to it.
+	- Make sure all members have access before you submit Phase 1 document 
+
+- Phase 4: DDL Statements (Revisited)
+	- Added "NOT NULL" "UNIQUE" where it was necessary.
+	- Fixed the StaffRoles and BookGenre table.
+	- Fixed date format in Members INSERT.
+	- Made the tables in order.
+
+
+Zemmat Hagos:
+
+- Phase 2: Data Modeling & ER Diagram
+	- Identify the key entities, attributes, and relationships in your use case.    
+	- Develop an Entity-Relationship Diagram (ERD) using appropriate diagramming tools.    
+	- The ERD must include all entities, their attributes, primary keys, and relationships between them.
+
+
+Brad Kajganich:
+
+- Phase 3: Normalization
+	- Normalize your database to 3rd Normal Form (3NF).    
+	- Submit documentation showing the process of normalizing the database from 1NF to 3NF.    
+	- Clearly explain how you handled redundant data and ensured that data dependencies are logically organized. 
+
+-Phase 4: DDL Statements   
+	- Based on the ERD, write SQL DDL statements to create the database schema.    
+	- Ensure that all necessary primary keys, foreign keys, and integrity constraints are included. 
