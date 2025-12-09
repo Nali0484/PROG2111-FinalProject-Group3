@@ -258,6 +258,14 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                     return;
                 }
 
+                // Validate at least one genre is selected
+                if (lstBookGenres.SelectedItems.Count == 0)
+                {
+                    MessageBox.Show("Please select at least one genre", "Validation Error",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
                     conn.Open();
@@ -282,10 +290,13 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                                 // Get the auto-generated BookID
                                 int bookId = Convert.ToInt32(cmd.ExecuteScalar());
 
+                                bool genreError = false;
                                 // Insert book-genre relationships
                                 foreach (ListBoxItem item in lstBookGenres.SelectedItems)
                                 {
-                                    int genreId = GetGenreId(item.Content.ToString());
+                                    string genreName = item.Content.ToString();
+                                    int genreId = GetOrCreateGenreId(genreName, conn, trans);
+
                                     if (genreId > 0)
                                     {
                                         using (MySqlCommand genreCmd = new MySqlCommand(
@@ -296,6 +307,19 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                                             genreCmd.ExecuteNonQuery();
                                         }
                                     }
+                                    else
+                                    {
+                                        genreError = true;
+                                        break;
+                                    }
+                                }
+
+                                if (genreError)
+                                {
+                                    trans.Rollback();
+                                    MessageBox.Show("Error adding genre relationships", "Database Error",
+                                        MessageBoxButton.OK, MessageBoxImage.Error);
+                                    return;
                                 }
 
                                 trans.Commit();
@@ -338,6 +362,14 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                     return;
                 }
 
+                // Validate at least one genre is selected
+                if (lstBookGenres.SelectedItems.Count == 0)
+                {
+                    MessageBox.Show("Please select at least one genre", "Validation Error",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
                     conn.Open();
@@ -372,10 +404,14 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                                         deleteGenres.ExecuteNonQuery();
                                     }
 
+                                    bool genreError = false;
                                     // Insert new genre relationships
                                     foreach (ListBoxItem item in lstBookGenres.SelectedItems)
                                     {
-                                        int genreId = GetGenreId(item.Content.ToString());
+                                        // FIXED: Get the actual content string from the ListBoxItem
+                                        string genreName = item.Content.ToString();
+                                        int genreId = GetOrCreateGenreId(genreName, conn, trans);
+
                                         if (genreId > 0)
                                         {
                                             using (MySqlCommand genreCmd = new MySqlCommand(
@@ -386,6 +422,19 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                                                 genreCmd.ExecuteNonQuery();
                                             }
                                         }
+                                        else
+                                        {
+                                            genreError = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (genreError)
+                                    {
+                                        trans.Rollback();
+                                        MessageBox.Show("Error updating genre relationships", "Database Error",
+                                            MessageBoxButton.OK, MessageBoxImage.Error);
+                                        return;
                                     }
 
                                     trans.Commit();
@@ -568,7 +617,8 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                     {
                         foreach (ListBoxItem item in lstBookGenres.Items)
                         {
-                            if (item.Content.ToString() == genre)
+                            // FIXED: Compare the actual content string
+                            if (item.Content.ToString() == genre.Trim())
                             {
                                 item.IsSelected = true;
                                 break;
@@ -580,27 +630,40 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
         }
 
         //
-        // METHOD        : GetGenreId
-        // DESCRIPTION   : Retrieves the GenreID for a given genre name
-        // RETURNS       : int - GenreID or -1 if not found
+        // METHOD        : GetOrCreateGenreId
+        // DESCRIPTION   : Retrieves the GenreID for a given genre name, creates it if it doesn't exist
+        // RETURNS       : int - GenreID or -1 if error
         //
-        private int GetGenreId(string genreName)
+        private int GetOrCreateGenreId(string genreName, MySqlConnection conn, MySqlTransaction trans)
         {
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                // First, try to get existing genre
+                using (MySqlCommand cmd = new MySqlCommand("SELECT GenreID FROM Genres WHERE Genre = @Genre", conn, trans))
                 {
-                    conn.Open();
-                    using (MySqlCommand cmd = new MySqlCommand("SELECT GenreID FROM Genres WHERE Genre = @Genre", conn))
+                    cmd.Parameters.AddWithValue("@Genre", genreName);
+                    object result = cmd.ExecuteScalar();
+
+                    if (result != null)
                     {
-                        cmd.Parameters.AddWithValue("@Genre", genreName);
-                        object result = cmd.ExecuteScalar();
-                        return result != null ? Convert.ToInt32(result) : -1;
+                        return Convert.ToInt32(result);
+                    }
+                    else
+                    {
+                        // Genre doesn't exist, create it
+                        using (MySqlCommand insertCmd = new MySqlCommand(
+                            "INSERT INTO Genres (Genre) VALUES (@Genre); SELECT LAST_INSERT_ID();", conn, trans))
+                        {
+                            insertCmd.Parameters.AddWithValue("@Genre", genreName);
+                            return Convert.ToInt32(insertCmd.ExecuteScalar());
+                        }
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                MessageBox.Show($"Error getting/creating genre '{genreName}': {ex.Message}", "Database Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return -1;
             }
         }
@@ -1122,6 +1185,7 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
         // EVENT HANDLER : StaffAdd_Click
         // DESCRIPTION   : Adds a new staff member to the database with validation and transaction support
         //                 StaffID is auto-generated by the database
+        //                 FIXED: Role selection issue - now properly retrieves role IDs
         //
         private void StaffAdd_Click(object sender, RoutedEventArgs e)
         {
@@ -1138,6 +1202,14 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                 if (string.IsNullOrWhiteSpace(txtStaffLastName.Text))
                 {
                     MessageBox.Show("Please enter last name", "Validation Error",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Validate at least one role is selected
+                if (lstStaffRoles.SelectedItems.Count == 0)
+                {
+                    MessageBox.Show("Please select at least one role", "Validation Error",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
@@ -1163,10 +1235,14 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                                 // Get the auto-generated StaffID
                                 int staffId = Convert.ToInt32(cmd.ExecuteScalar());
 
+                                bool roleError = false;
                                 // Insert role assignments
                                 foreach (ListBoxItem item in lstStaffRoles.SelectedItems)
                                 {
-                                    int roleId = GetRoleId(item.Content.ToString());
+                                    // FIXED: Get the actual content string from the ListBoxItem
+                                    string roleName = item.Content.ToString();
+                                    int roleId = GetOrCreateRoleId(roleName, conn, trans);
+
                                     if (roleId > 0)
                                     {
                                         using (MySqlCommand roleCmd = new MySqlCommand(
@@ -1177,6 +1253,19 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                                             roleCmd.ExecuteNonQuery();
                                         }
                                     }
+                                    else
+                                    {
+                                        roleError = true;
+                                        break;
+                                    }
+                                }
+
+                                if (roleError)
+                                {
+                                    trans.Rollback();
+                                    MessageBox.Show("Error adding role relationships", "Database Error",
+                                        MessageBoxButton.OK, MessageBoxImage.Error);
+                                    return;
                                 }
 
                                 trans.Commit();
@@ -1207,6 +1296,7 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
         // EVENT HANDLER : StaffUpdate_Click
         // DESCRIPTION   : Updates an existing staff member with transaction support
         //                 Handles role assignments recreation
+        //                 FIXED: Role selection issue - now properly retrieves role IDs
         //
         private void StaffUpdate_Click(object sender, RoutedEventArgs e)
         {
@@ -1215,6 +1305,14 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                 if (!int.TryParse(txtStaffID.Text, out int staffId) || staffId <= 0)
                 {
                     MessageBox.Show("Please select a valid staff member to update", "Validation Error",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Validate at least one role is selected
+                if (lstStaffRoles.SelectedItems.Count == 0)
+                {
+                    MessageBox.Show("Please select at least one role", "Validation Error",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
@@ -1249,10 +1347,14 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                                         deleteRoles.ExecuteNonQuery();
                                     }
 
+                                    bool roleError = false;
                                     // Insert new role assignments
                                     foreach (ListBoxItem item in lstStaffRoles.SelectedItems)
                                     {
-                                        int roleId = GetRoleId(item.Content.ToString());
+                                        // FIXED: Get the actual content string from the ListBoxItem
+                                        string roleName = item.Content.ToString();
+                                        int roleId = GetOrCreateRoleId(roleName, conn, trans);
+
                                         if (roleId > 0)
                                         {
                                             using (MySqlCommand roleCmd = new MySqlCommand(
@@ -1263,6 +1365,19 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                                                 roleCmd.ExecuteNonQuery();
                                             }
                                         }
+                                        else
+                                        {
+                                            roleError = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (roleError)
+                                    {
+                                        trans.Rollback();
+                                        MessageBox.Show("Error updating role relationships", "Database Error",
+                                            MessageBoxButton.OK, MessageBoxImage.Error);
+                                        return;
                                     }
 
                                     trans.Commit();
@@ -1412,6 +1527,7 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
         //
         // EVENT HANDLER : dgStaff_SelectionChanged
         // DESCRIPTION   : Populates staff input fields when a row is selected in the data grid
+        //                 FIXED: Properly selects roles from the list
         //
         private void dgStaff_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1432,7 +1548,8 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                     {
                         foreach (ListBoxItem item in lstStaffRoles.Items)
                         {
-                            if (item.Content.ToString() == role)
+                            // FIXED: Compare the actual content string
+                            if (item.Content.ToString() == role.Trim())
                             {
                                 item.IsSelected = true;
                                 break;
@@ -1444,8 +1561,47 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
         }
 
         //
+        // METHOD        : GetOrCreateRoleId
+        // DESCRIPTION   : Retrieves the RoleID for a given role name, creates it if it doesn't exist
+        // RETURNS       : int - RoleID or -1 if error
+        //
+        private int GetOrCreateRoleId(string roleName, MySqlConnection conn, MySqlTransaction trans)
+        {
+            try
+            {
+                // First, try to get existing role
+                using (MySqlCommand cmd = new MySqlCommand("SELECT RoleID FROM Roles WHERE RoleName = @RoleName", conn, trans))
+                {
+                    cmd.Parameters.AddWithValue("@RoleName", roleName);
+                    object result = cmd.ExecuteScalar();
+
+                    if (result != null)
+                    {
+                        return Convert.ToInt32(result);
+                    }
+                    else
+                    {
+                        // Role doesn't exist, create it
+                        using (MySqlCommand insertCmd = new MySqlCommand(
+                            "INSERT INTO Roles (RoleName) VALUES (@RoleName); SELECT LAST_INSERT_ID();", conn, trans))
+                        {
+                            insertCmd.Parameters.AddWithValue("@RoleName", roleName);
+                            return Convert.ToInt32(insertCmd.ExecuteScalar());
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error getting/creating role '{roleName}': {ex.Message}", "Database Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return -1;
+            }
+        }
+
+        //
         // METHOD        : GetRoleId
-        // DESCRIPTION   : Retrieves the RoleID for a given role name
+        // DESCRIPTION   : Retrieves the RoleID for a given role name (legacy method)
         // RETURNS       : int - RoleID or -1 if not found
         //
         private int GetRoleId(string roleName)
@@ -2572,7 +2728,7 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
         //
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("BookBuster Library Management System\nVersion 1.0\n\n" +
+            MessageBox.Show("BookBuster Library Management System\n\n" +
                 "Developed for PROG2111 Final Project\n\n" +
                 "Group Members:\n" +
                 "• Najaf Ali – 9060484\n" +
