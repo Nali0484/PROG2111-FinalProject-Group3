@@ -1,6 +1,6 @@
 ﻿/*
 * FILE          : BookBuster.xaml.cs
-* PROJECT       : Phase 5 - Programmatic Access - CRUD Operations
+* PROJECT       : Phase 5 - Programmatic Access & CRUD Operations
 * PROGRAMMER    : Najaf Ali, Zemmat Hagos, Brad Kajganich
 * FIRST VERSION : 2025-12-03
 * DESCRIPTION   :
