@@ -1,0 +1,47 @@
+Group Members: Najaf Ali – 9060484, Zemmat Hagos – 84884339, Brad Kajganich – 9036321
+
+
+Najaf Ali:
+
+- Phase 1: Project Idea & Use Case
+	- Choose a real-world scenario (A Library Management System).
+	- Created a GitHub repository and add all members to it.
+	- Make sure all members have access before you submit Phase 1 document. 
+
+- Phase 4: DDL Statements (Revisited)
+	- Added "NOT NULL" "UNIQUE" where it was necessary.
+	- Fixed the StaffRoles and BookGenre table.
+	- Fixed date format in Members INSERT.
+	- Fixed duplicate phone numbers in Staff INSERT
+	- Removed sample data 
+	- Made the tables in order.
+
+
+Zemmat Hagos:
+
+- Phase 2: Data Modeling & ER Diagram
+	- Identify the key entities, attributes, and relationships in your use case.    
+	- Develop an Entity-Relationship Diagram (ERD) using appropriate diagramming tools.    
+	- The ERD included all entities, their attributes, primary keys, and relationships between them.   
+
+
+Brad Kajganich:
+
+- Phase 3: Normalization
+	- Normalize database to 3rd Normal Form (3NF).    
+	- Documentation showing the process of normalizing the database from 1NF to 3NF.    
+	- Clearly explain how we handled redundant data and ensured that data dependencies are logically organized. 
+
+-Phase 4: DDL Statements   
+	- Write SQL DDL statements to create the database schema.    
+	- Ensure that all necessary primary keys, foreign keys, and integrity constraints are included. 
+
+
+
+Najaf Ali, Zemmat Hagos, Brad Kajganich:
+
+- Phase 5: Programmatic Access & CRUD Operations 
+	- Developed C# programs that connect to the MySQL database using the ADO.NET 
+	- Performed CRUD operations (Create, Read, Update, Delete) for the entities defined in your ERD.    
+	- Ensured proper error handling and transaction control.    
+	- Used the ADO.NET MySQL library to establish the connection and perform operations. 
