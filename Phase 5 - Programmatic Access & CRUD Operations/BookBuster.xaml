@@ -38,7 +38,7 @@
 
         <!-- TabControl containing all main sections of the application -->
         <TabControl>
-            <!-- ===== BOOKS TAB ===== -->
+            <!-- ===== BOOKS TAB - UPDATED WITH AUTO-GENERATED BOOK ID ===== -->
             <TabItem Header="Books">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
@@ -63,9 +63,10 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Book ID input -->
+                            <!-- Book ID display (read-only, auto-generated) -->
                             <Label Grid.Row="0" Grid.Column="0" Content="Book ID:" Margin="5"/>
-                            <TextBox x:Name="txtBookID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200"/>
+                            <TextBox x:Name="txtBookID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200" 
+                                    IsReadOnly="True" Background="LightGray" Text="Auto-generated"/>
 
                             <!-- Rental status selection -->
                             <Label Grid.Row="0" Grid.Column="3" Content="Rental Status:" Margin="5"/>
@@ -120,7 +121,7 @@
                 </Grid>
             </TabItem>
 
-            <!-- ===== MEMBERS TAB - UPDATED WITH MANUAL ADDRESS INPUT ===== -->
+            <!-- ===== MEMBERS TAB - UPDATED WITH AUTO-GENERATED MEMBER ID AND ADDRESS ID ===== -->
             <TabItem Header="Members">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
@@ -147,9 +148,10 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Member ID input -->
+                            <!-- Member ID display (read-only, auto-generated) -->
                             <Label Grid.Row="0" Grid.Column="0" Content="Member ID:" Margin="5"/>
-                            <TextBox x:Name="txtMemberID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200"/>
+                            <TextBox x:Name="txtMemberID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200" 
+                                    IsReadOnly="True" Background="LightGray" Text="Auto-generated"/>
 
                             <!-- Join date picker -->
                             <Label Grid.Row="0" Grid.Column="3" Content="Join Date:" Margin="5"/>
@@ -183,9 +185,10 @@
                             <Label Grid.Row="4" Grid.Column="0" Content="Province:" Margin="5"/>
                             <TextBox x:Name="txtMemberProvince" Grid.Row="4" Grid.Column="1" Margin="5" Width="200"/>
 
-                            <!-- Address ID display (read-only for reference) -->
+                            <!-- Address ID display (read-only, auto-generated) -->
                             <Label Grid.Row="4" Grid.Column="3" Content="Address ID:" Margin="5"/>
-                            <TextBox x:Name="txtMemberAddressID" Grid.Row="4" Grid.Column="4" Margin="5" Width="200" IsReadOnly="True"/>
+                            <TextBox x:Name="txtMemberAddressID" Grid.Row="4" Grid.Column="4" Margin="5" Width="200" 
+                                    IsReadOnly="True" Background="LightGray" Text="Auto-generated"/>
 
                             <!-- Action buttons for member operations -->
                             <StackPanel Grid.Row="5" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
@@ -205,7 +208,7 @@
                 </Grid>
             </TabItem>
 
-            <!-- ===== STAFF TAB - UPDATED WITH SMALLER STAFF ID TEXTBOX ===== -->
+            <!-- ===== STAFF TAB - UPDATED WITH AUTO-GENERATED STAFF ID ===== -->
             <TabItem Header="Staff">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
@@ -230,9 +233,10 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Staff ID input - Reduced width from 200 to 120 -->
+                            <!-- Staff ID display (read-only, auto-generated) -->
                             <Label Grid.Row="0" Grid.Column="0" Content="Staff ID:" Margin="5"/>
-                            <TextBox x:Name="txtStaffID" Grid.Row="0" Grid.Column="1" Margin="5" Width="120"/>
+                            <TextBox x:Name="txtStaffID" Grid.Row="0" Grid.Column="1" Margin="5" Width="120" 
+                                    IsReadOnly="True" Background="LightGray" Text="Auto-generated"/>
 
                             <!-- Staff role selection (multiple) -->
                             <Label Grid.Row="0" Grid.Column="3" Content="Roles:" Margin="5"/>
@@ -278,7 +282,7 @@
                 </Grid>
             </TabItem>
 
-            <!-- ===== LOANS TAB ===== -->
+            <!-- ===== LOANS TAB - UPDATED WITH AUTO-GENERATED LOAN ID AND NO RETURN BOOK BUTTON ===== -->
             <TabItem Header="Loans">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
@@ -303,9 +307,10 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Loan ID input -->
+                            <!-- Loan ID display (read-only, auto-generated) -->
                             <Label Grid.Row="0" Grid.Column="0" Content="Loan ID:" Margin="5"/>
-                            <TextBox x:Name="txtLoanID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200"/>
+                            <TextBox x:Name="txtLoanID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200" 
+                                    IsReadOnly="True" Background="LightGray" Text="Auto-generated"/>
 
                             <!-- Book selection (from database) -->
                             <Label Grid.Row="0" Grid.Column="3" Content="Book:" Margin="5"/>
@@ -331,14 +336,14 @@
                             <Label Grid.Row="3" Grid.Column="0" Content="Return Date:" Margin="5"/>
                             <DatePicker x:Name="dpReturnDate" Grid.Row="3" Grid.Column="1" Margin="5" Width="200"/>
 
-                            <!-- Action buttons for loan operations -->
+                            <!-- Action buttons for loan operations - REMOVED RETURN BOOK BUTTON -->
                             <StackPanel Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                                 <Button Content="Add" Width="80" Margin="5" Click="LoanAdd_Click"/>
                                 <Button Content="Update" Width="80" Margin="5" Click="LoanUpdate_Click"/>
                                 <Button Content="Delete" Width="80" Margin="5" Click="LoanDelete_Click"/>
                                 <Button Content="Clear" Width="80" Margin="5" Click="LoanClear_Click"/>
                                 <Button Content="Refresh" Width="80" Margin="5" Click="LoanRefresh_Click"/>
-                                <Button Content="Return Book" Width="100" Margin="5" Click="LoanReturn_Click"/>
+                                <!-- Return Book button removed as requested -->
                             </StackPanel>
                         </Grid>
                     </GroupBox>
@@ -350,7 +355,7 @@
                 </Grid>
             </TabItem>
 
-            <!-- ===== FINES & PAYMENTS TAB ===== -->
+            <!-- ===== FINES & PAYMENTS TAB - UPDATED WITH AUTO-GENERATED FINE ID AND PAYMENT ID ===== -->
             <TabItem Header="Fines and Payments">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
@@ -374,9 +379,10 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Fine ID input -->
+                            <!-- Fine ID display (read-only, auto-generated) -->
                             <Label Grid.Row="0" Grid.Column="0" Content="Fine ID:" Margin="5"/>
-                            <TextBox x:Name="txtFineID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200"/>
+                            <TextBox x:Name="txtFineID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200" 
+                                    IsReadOnly="True" Background="LightGray" Text="Auto-generated"/>
 
                             <!-- Loan selection for fine (from database) -->
                             <Label Grid.Row="0" Grid.Column="3" Content="Loan:" Margin="5"/>
@@ -408,9 +414,10 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Payment ID input -->
+                            <!-- Payment ID display (read-only, auto-generated) -->
                             <Label Grid.Row="0" Grid.Column="0" Content="Payment ID:" Margin="5"/>
-                            <TextBox x:Name="txtPaymentID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200"/>
+                            <TextBox x:Name="txtPaymentID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200" 
+                                    IsReadOnly="True" Background="LightGray" Text="Auto-generated"/>
 
                             <!-- Fine selection for payment (from database) -->
                             <Label Grid.Row="0" Grid.Column="3" Content="Fine:" Margin="5"/>
