@@ -1,0 +1,463 @@
+﻿<!--
+* FILE          : BookBuster.xaml
+* PROJECT       : Phase 5 – Programmatic Access & CRUD Operations
+* PROGRAMMER    : Najaf Ali, Zemmat Hagos, Brad Kajganich
+* FIRST VERSION : 2025-12-03
+* DESCRIPTION   :
+*      This file contains the XAML markup for the BookBuster Library Management System
+*      user interface. It defines the window layout with tabbed sections for different
+*      entities (Books, Members, Staff, Loans, Fines & Payments) and includes input forms
+*      with validation controls, data grids for displaying records, and navigation menus.
+*      The interface is organized using Grid, GroupBox, and StackPanel containers
+*      for clean, responsive layout management.
+-->
+
+<Window x:Class="Phase_5___Programmatic_Access___CRUD_Operations.BookBuster"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="BookBuster - Library Management System" Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen">
+
+    <DockPanel>
+        <!-- Top menu bar with File, Views, and Help menus -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Exit" Click="Exit_Click"/>
+            </MenuItem>
+            <MenuItem Header="Views">
+                <MenuItem Header="Loan Fine Details" Click="ViewLoanFineDetails_Click"/>
+                <MenuItem Header="Member Balances" Click="ViewMemberBalances_Click"/>
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="About" Click="About_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- TabControl containing all main sections of the application -->
+        <TabControl>
+            <!-- ===== BOOKS TAB ===== -->
+            <TabItem Header="Books">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Input form for book information -->
+                    <GroupBox Header="Book Information" Grid.Row="0" Margin="5">
+                        <Grid Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Book ID input -->
+                            <Label Grid.Row="0" Grid.Column="0" Content="Book ID:" Margin="5"/>
+                            <TextBox x:Name="txtBookID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Rental status selection -->
+                            <Label Grid.Row="0" Grid.Column="3" Content="Rental Status:" Margin="5"/>
+                            <ComboBox x:Name="cmbBookStatus" Grid.Row="0" Grid.Column="4" Margin="5" Width="200">
+                                <ComboBoxItem Content="Available"/>
+                                <ComboBoxItem Content="Rented"/>
+                            </ComboBox>
+
+                            <!-- Book title input -->
+                            <Label Grid.Row="1" Grid.Column="0" Content="Title:" Margin="5"/>
+                            <TextBox x:Name="txtBookTitle" Grid.Row="1" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Language input -->
+                            <Label Grid.Row="1" Grid.Column="3" Content="Language:" Margin="5"/>
+                            <TextBox x:Name="txtBookLanguage" Grid.Row="1" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Author input -->
+                            <Label Grid.Row="2" Grid.Column="0" Content="Author:" Margin="5"/>
+                            <TextBox x:Name="txtBookAuthor" Grid.Row="2" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Publishing year input -->
+                            <Label Grid.Row="2" Grid.Column="3" Content="Publishing Year:" Margin="5"/>
+                            <TextBox x:Name="txtBookYear" Grid.Row="2" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Genre selection (multiple) -->
+                            <Label Grid.Row="3" Grid.Column="0" Content="Genres:" Margin="5"/>
+                            <ListBox x:Name="lstBookGenres" Grid.Row="3" Grid.Column="1" Margin="5" Width="200" 
+                                    SelectionMode="Multiple" Height="80">
+                                <ListBoxItem Content="Sci-Fi"/>
+                                <ListBoxItem Content="Thriller"/>
+                                <ListBoxItem Content="Poetry"/>
+                                <ListBoxItem Content="Fantasy"/>
+                                <ListBoxItem Content="Childrens"/>
+                                <ListBoxItem Content="Mystery"/>
+                            </ListBox>
+
+                            <!-- Action buttons for book operations -->
+                            <StackPanel Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                                <Button Content="Add" Width="80" Margin="5" Click="BookAdd_Click"/>
+                                <Button Content="Update" Width="80" Margin="5" Click="BookUpdate_Click"/>
+                                <Button Content="Delete" Width="80" Margin="5" Click="BookDelete_Click"/>
+                                <Button Content="Clear" Width="80" Margin="5" Click="BookClear_Click"/>
+                                <Button Content="Refresh" Width="80" Margin="5" Click="BookRefresh_Click"/>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- DataGrid to display books from database -->
+                    <DataGrid x:Name="dgBooks" Grid.Row="1" Margin="5" 
+                              AutoGenerateColumns="True" CanUserAddRows="False" IsReadOnly="True"
+                              SelectionChanged="dgBooks_SelectionChanged"/>
+                </Grid>
+            </TabItem>
+
+            <!-- ===== MEMBERS TAB - UPDATED WITH MANUAL ADDRESS INPUT ===== -->
+            <TabItem Header="Members">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Input form for member information -->
+                    <GroupBox Header="Member Information" Grid.Row="0" Margin="5">
+                        <Grid Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Member ID input -->
+                            <Label Grid.Row="0" Grid.Column="0" Content="Member ID:" Margin="5"/>
+                            <TextBox x:Name="txtMemberID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Join date picker -->
+                            <Label Grid.Row="0" Grid.Column="3" Content="Join Date:" Margin="5"/>
+                            <DatePicker x:Name="dpMemberJoinDate" Grid.Row="0" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- First name input -->
+                            <Label Grid.Row="1" Grid.Column="0" Content="First Name:" Margin="5"/>
+                            <TextBox x:Name="txtMemberFirstName" Grid.Row="1" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Last name input -->
+                            <Label Grid.Row="1" Grid.Column="3" Content="Last Name:" Margin="5"/>
+                            <TextBox x:Name="txtMemberLastName" Grid.Row="1" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Email input -->
+                            <Label Grid.Row="2" Grid.Column="0" Content="Email:" Margin="5"/>
+                            <TextBox x:Name="txtMemberEmail" Grid.Row="2" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Phone input -->
+                            <Label Grid.Row="2" Grid.Column="3" Content="Phone:" Margin="5"/>
+                            <TextBox x:Name="txtMemberPhone" Grid.Row="2" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Street address input (manual entry) -->
+                            <Label Grid.Row="3" Grid.Column="0" Content="Street Address:" Margin="5"/>
+                            <TextBox x:Name="txtMemberStreet" Grid.Row="3" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- City input (manual entry) -->
+                            <Label Grid.Row="3" Grid.Column="3" Content="City:" Margin="5"/>
+                            <TextBox x:Name="txtMemberCity" Grid.Row="3" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Province input (manual entry) -->
+                            <Label Grid.Row="4" Grid.Column="0" Content="Province:" Margin="5"/>
+                            <TextBox x:Name="txtMemberProvince" Grid.Row="4" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Address ID display (read-only for reference) -->
+                            <Label Grid.Row="4" Grid.Column="3" Content="Address ID:" Margin="5"/>
+                            <TextBox x:Name="txtMemberAddressID" Grid.Row="4" Grid.Column="4" Margin="5" Width="200" IsReadOnly="True"/>
+
+                            <!-- Action buttons for member operations -->
+                            <StackPanel Grid.Row="5" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                                <Button Content="Add" Width="80" Margin="5" Click="MemberAdd_Click"/>
+                                <Button Content="Update" Width="80" Margin="5" Click="MemberUpdate_Click"/>
+                                <Button Content="Delete" Width="80" Margin="5" Click="MemberDelete_Click"/>
+                                <Button Content="Clear" Width="80" Margin="5" Click="MemberClear_Click"/>
+                                <Button Content="Refresh" Width="80" Margin="5" Click="MemberRefresh_Click"/>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- DataGrid to display members -->
+                    <DataGrid x:Name="dgMembers" Grid.Row="1" Margin="5" 
+                              AutoGenerateColumns="True" CanUserAddRows="False" IsReadOnly="True"
+                              SelectionChanged="dgMembers_SelectionChanged"/>
+                </Grid>
+            </TabItem>
+
+            <!-- ===== STAFF TAB - UPDATED WITH SMALLER STAFF ID TEXTBOX ===== -->
+            <TabItem Header="Staff">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Input form for staff information -->
+                    <GroupBox Header="Staff Information" Grid.Row="0" Margin="5">
+                        <Grid Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Staff ID input - Reduced width from 200 to 120 -->
+                            <Label Grid.Row="0" Grid.Column="0" Content="Staff ID:" Margin="5"/>
+                            <TextBox x:Name="txtStaffID" Grid.Row="0" Grid.Column="1" Margin="5" Width="120"/>
+
+                            <!-- Staff role selection (multiple) -->
+                            <Label Grid.Row="0" Grid.Column="3" Content="Roles:" Margin="5"/>
+                            <ListBox x:Name="lstStaffRoles" Grid.Row="0" Grid.Column="4" Margin="5" Width="200" 
+                                    SelectionMode="Multiple" Height="80">
+                                <ListBoxItem Content="Librarian"/>
+                                <ListBoxItem Content="Manager"/>
+                                <ListBoxItem Content="Housekeeping"/>
+                                <ListBoxItem Content="Reception"/>
+                            </ListBox>
+
+                            <!-- First name input -->
+                            <Label Grid.Row="1" Grid.Column="0" Content="First Name:" Margin="5"/>
+                            <TextBox x:Name="txtStaffFirstName" Grid.Row="1" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Last name input -->
+                            <Label Grid.Row="1" Grid.Column="3" Content="Last Name:" Margin="5"/>
+                            <TextBox x:Name="txtStaffLastName" Grid.Row="1" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Email input -->
+                            <Label Grid.Row="2" Grid.Column="0" Content="Email:" Margin="5"/>
+                            <TextBox x:Name="txtStaffEmail" Grid.Row="2" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Phone input -->
+                            <Label Grid.Row="2" Grid.Column="3" Content="Phone:" Margin="5"/>
+                            <TextBox x:Name="txtStaffPhone" Grid.Row="2" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Action buttons for staff operations -->
+                            <StackPanel Grid.Row="3" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                                <Button Content="Add" Width="80" Margin="5" Click="StaffAdd_Click"/>
+                                <Button Content="Update" Width="80" Margin="5" Click="StaffUpdate_Click"/>
+                                <Button Content="Delete" Width="80" Margin="5" Click="StaffDelete_Click"/>
+                                <Button Content="Clear" Width="80" Margin="5" Click="StaffClear_Click"/>
+                                <Button Content="Refresh" Width="80" Margin="5" Click="StaffRefresh_Click"/>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- DataGrid to display staff records -->
+                    <DataGrid x:Name="dgStaff" Grid.Row="1" Margin="5" 
+                              AutoGenerateColumns="True" CanUserAddRows="False" IsReadOnly="True"
+                              SelectionChanged="dgStaff_SelectionChanged"/>
+                </Grid>
+            </TabItem>
+
+            <!-- ===== LOANS TAB ===== -->
+            <TabItem Header="Loans">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Input form for loan information -->
+                    <GroupBox Header="Loan Information" Grid.Row="0" Margin="5">
+                        <Grid Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Loan ID input -->
+                            <Label Grid.Row="0" Grid.Column="0" Content="Loan ID:" Margin="5"/>
+                            <TextBox x:Name="txtLoanID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Book selection (from database) -->
+                            <Label Grid.Row="0" Grid.Column="3" Content="Book:" Margin="5"/>
+                            <ComboBox x:Name="cmbLoanBook" Grid.Row="0" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Member selection (from database) -->
+                            <Label Grid.Row="1" Grid.Column="0" Content="Member:" Margin="5"/>
+                            <ComboBox x:Name="cmbLoanMember" Grid.Row="1" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Staff selection (from database) -->
+                            <Label Grid.Row="1" Grid.Column="3" Content="Staff:" Margin="5"/>
+                            <ComboBox x:Name="cmbLoanStaff" Grid.Row="1" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Checkout date picker -->
+                            <Label Grid.Row="2" Grid.Column="0" Content="Checkout Date:" Margin="5"/>
+                            <DatePicker x:Name="dpCheckoutDate" Grid.Row="2" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Due date picker -->
+                            <Label Grid.Row="2" Grid.Column="3" Content="Due Date:" Margin="5"/>
+                            <DatePicker x:Name="dpDueDate" Grid.Row="2" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Return date picker -->
+                            <Label Grid.Row="3" Grid.Column="0" Content="Return Date:" Margin="5"/>
+                            <DatePicker x:Name="dpReturnDate" Grid.Row="3" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Action buttons for loan operations -->
+                            <StackPanel Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                                <Button Content="Add" Width="80" Margin="5" Click="LoanAdd_Click"/>
+                                <Button Content="Update" Width="80" Margin="5" Click="LoanUpdate_Click"/>
+                                <Button Content="Delete" Width="80" Margin="5" Click="LoanDelete_Click"/>
+                                <Button Content="Clear" Width="80" Margin="5" Click="LoanClear_Click"/>
+                                <Button Content="Refresh" Width="80" Margin="5" Click="LoanRefresh_Click"/>
+                                <Button Content="Return Book" Width="100" Margin="5" Click="LoanReturn_Click"/>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- DataGrid to display loans -->
+                    <DataGrid x:Name="dgLoans" Grid.Row="1" Margin="5" 
+                              AutoGenerateColumns="True" CanUserAddRows="False" IsReadOnly="True"
+                              SelectionChanged="dgLoans_SelectionChanged"/>
+                </Grid>
+            </TabItem>
+
+            <!-- ===== FINES & PAYMENTS TAB ===== -->
+            <TabItem Header="Fines and Payments">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Input form for fine information -->
+                    <GroupBox Header="Fine Information" Grid.Row="0" Margin="5">
+                        <Grid Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Fine ID input -->
+                            <Label Grid.Row="0" Grid.Column="0" Content="Fine ID:" Margin="5"/>
+                            <TextBox x:Name="txtFineID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Loan selection for fine (from database) -->
+                            <Label Grid.Row="0" Grid.Column="3" Content="Loan:" Margin="5"/>
+                            <ComboBox x:Name="cmbFineLoan" Grid.Row="0" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Action buttons for fine operations -->
+                            <StackPanel Grid.Row="1" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                                <Button Content="Add Fine" Width="80" Margin="5" Click="FineAdd_Click"/>
+                                <Button Content="Delete Fine" Width="80" Margin="5" Click="FineDelete_Click"/>
+                                <Button Content="Refresh Fines" Width="80" Margin="5" Click="FineRefresh_Click"/>
+                                <Button Content="Clear" Width="80" Margin="5" Click="FineClear_Click"/>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Input form for payment information -->
+                    <GroupBox Header="Payment Information" Grid.Row="1" Margin="5">
+                        <Grid Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Payment ID input -->
+                            <Label Grid.Row="0" Grid.Column="0" Content="Payment ID:" Margin="5"/>
+                            <TextBox x:Name="txtPaymentID" Grid.Row="0" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Fine selection for payment (from database) -->
+                            <Label Grid.Row="0" Grid.Column="3" Content="Fine:" Margin="5"/>
+                            <ComboBox x:Name="cmbPaymentFine" Grid.Row="0" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Amount paid input -->
+                            <Label Grid.Row="1" Grid.Column="0" Content="Amount Paid:" Margin="5"/>
+                            <TextBox x:Name="txtPaymentAmount" Grid.Row="1" Grid.Column="1" Margin="5" Width="200"/>
+
+                            <!-- Payment date picker -->
+                            <Label Grid.Row="1" Grid.Column="3" Content="Payment Date:" Margin="5"/>
+                            <DatePicker x:Name="dpPaymentDate" Grid.Row="1" Grid.Column="4" Margin="5" Width="200"/>
+
+                            <!-- Payment method selection -->
+                            <Label Grid.Row="2" Grid.Column="0" Content="Payment Method:" Margin="5"/>
+                            <ComboBox x:Name="cmbPaymentMethod" Grid.Row="2" Grid.Column="1" Margin="5" Width="200">
+                                <ComboBoxItem Content="Mastercard"/>
+                                <ComboBoxItem Content="Visa"/>
+                                <ComboBoxItem Content="Cash"/>
+                                <ComboBoxItem Content="Debit"/>
+                            </ComboBox>
+
+                            <!-- Action buttons for payment operations -->
+                            <StackPanel Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                                <Button Content="Add Payment" Width="90" Margin="5" Click="PaymentAdd_Click"/>
+                                <Button Content="Delete Payment" Width="90" Margin="5" Click="PaymentDelete_Click"/>
+                                <Button Content="Refresh Payments" Width="90" Margin="5" Click="PaymentRefresh_Click"/>
+                                <Button Content="Clear" Width="90" Margin="5" Click="PaymentClear_Click"/>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- TabControl to switch between fines and payments DataGrids -->
+                    <TabControl Grid.Row="2">
+                        <TabItem Header="Fines">
+                            <DataGrid x:Name="dgFines" Margin="5" 
+                                      AutoGenerateColumns="True" CanUserAddRows="False" IsReadOnly="True"
+                                      SelectionChanged="dgFines_SelectionChanged"/>
+                        </TabItem>
+                        <TabItem Header="Payments">
+                            <DataGrid x:Name="dgPayments" Margin="5" 
+                                      AutoGenerateColumns="True" CanUserAddRows="False" IsReadOnly="True"
+                                      SelectionChanged="dgPayments_SelectionChanged"/>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

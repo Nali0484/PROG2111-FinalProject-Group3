@@ -1,0 +1,9 @@
+﻿<Application x:Class="Phase_5___Programmatic_Access___CRUD_Operations.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Phase_5___Programmatic_Access___CRUD_Operations"
+             StartupUri="BookBuster.xaml">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>
