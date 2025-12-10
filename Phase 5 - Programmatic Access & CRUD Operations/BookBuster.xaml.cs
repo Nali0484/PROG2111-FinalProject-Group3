@@ -408,7 +408,6 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
                                     // Insert new genre relationships
                                     foreach (ListBoxItem item in lstBookGenres.SelectedItems)
                                     {
-                                        // FIXED: Get the actual content string from the ListBoxItem
                                         string genreName = item.Content.ToString();
                                         int genreId = GetOrCreateGenreId(genreName, conn, trans);
 
@@ -1595,32 +1594,6 @@ namespace Phase_5___Programmatic_Access___CRUD_Operations
             {
                 MessageBox.Show($"Error getting/creating role '{roleName}': {ex.Message}", "Database Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
-                return -1;
-            }
-        }
-
-        //
-        // METHOD        : GetRoleId
-        // DESCRIPTION   : Retrieves the RoleID for a given role name (legacy method)
-        // RETURNS       : int - RoleID or -1 if not found
-        //
-        private int GetRoleId(string roleName)
-        {
-            try
-            {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    conn.Open();
-                    using (MySqlCommand cmd = new MySqlCommand("SELECT RoleID FROM Roles WHERE RoleName = @RoleName", conn))
-                    {
-                        cmd.Parameters.AddWithValue("@RoleName", roleName);
-                        object result = cmd.ExecuteScalar();
-                        return result != null ? Convert.ToInt32(result) : -1;
-                    }
-                }
-            }
-            catch
-            {
                 return -1;
             }
         }
